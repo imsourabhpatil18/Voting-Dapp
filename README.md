@@ -6,4 +6,4 @@ The smart contract is implemented in Solidity, and it facilitates the registrati
 <br>
 and the determination of election results.
 <br>
-contributions and suggestions will be always welcome , happy to learn
+We value and appreciate contributions from the community. Your suggestions and contributions are always welcome as we strive to improve and grow together.
