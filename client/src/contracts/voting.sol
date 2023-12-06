@@ -20,8 +20,8 @@ contract vote{
 
         string name;
         uint age;
-        string gender;
         string party;
+        string gender;
         uint CandidateId;
         address candidateAddress;
         uint votes;
@@ -45,13 +45,13 @@ contract vote{
      }
 
      //function for register the candidate and add the details in candidateDetails mapping
-     function candidateRegistration(string memory name,uint age,string memory party , string memory gender,uint CandidateId, address candidateAddress,uint votes)external{
+     function candidateRegistration(string memory name,uint age,string memory party , string memory gender)external{
         require(age>=18,"you are below 18");
         require(candidateVerification(msg.sender),"you are already registered");
         require(nextCandidateId<3,"registration full");
 
-        candidateDetails[nextCandidateId]=candidate(name,age,party,gender,CandidateId,candidateAddress,votes);
-        nextCandidateId++;
+        candidateDetails[nextCandidateId]=candidate(name,age,party,gender,nextCandidateId,msg.sender,0);
+        nextCandidateId++; 
      }
 
 
@@ -85,11 +85,11 @@ contract vote{
      }
 
      //function for registration of voters
-     function voterRegistration(  string memory name, uint age, uint voterId,string memory gender,uint voteCandidateId,address voterAddress)external{
-        require(age<18,"you are below 18");
+     function voterRegistration(  string memory name, uint age, string memory gender)external{
+        require(age>18,"you are below 18");
         require(voterVerification(msg.sender),"you have already registered");
 
-        voterDetails[nextVoterId]=voter(name,age,voterId,gender,voteCandidateId,voterAddress);
+        voterDetails[nextVoterId]=voter(name,age,nextVoterId,gender,0,msg.sender);
      }
 
      //function for verify the voter

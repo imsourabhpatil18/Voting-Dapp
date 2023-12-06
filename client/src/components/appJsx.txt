@@ -1,135 +1,68 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Candidate from "./components/candidateRegistration";
-import VoterRegister from "./components/VoterRegister";
+import CandidateRegister from "./components/candidateRegister";
+import VoterRegister from "./components/voterRegister";
 import Winner from "./components/Winner";
-import Vote from "./contracts/Vote.json";
+import Vote from "./contracts/vote.json";
+
 import Voting from "./components/voting";
 import Web3 from "web3";
 import { useEffect, useState } from "react";
 import "./App.css";
-import ElectionCommision from "./components/ElectionCommision";
+import ElectionCommision from "./components/electionCommision";
+import Navbar from "./components/navbar";
+import WalletConnect from "./components/walletConect";
 
 function App() {
   const [state, setState] = useState({
     web3: null,
     contract: null,
   });
-  const [account, setAccount] = useState("Not connected");
 
   useEffect(() => {
     async function init() {
-      const provider = new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
-      const web3 = new Web3(provider);
+      const contractABI = Vote.abi;
 
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = Vote.networks[networkId];
+      let provider = new Web3.providers.HttpProvider(
+        "https://eth-sepolia.g.alchemy.com/v2/_EemJldI7Q2EbIcwTPXcuKVT_X_UaS5r"
+      );
 
-      const contract = new web3.eth.Contract(Vote.abi, deployedNetwork.address);
+      let web3 = new Web3(provider);
 
-      setState({ web3: web3, contract: contract });
+      const Contract = new web3.eth.Contract(
+        contractABI,
+        "0xfA532Eb4790ff1740891b29f28d1e3fa8CFb8001"
+      );
+
+      setState({ web3: web3, contract: Contract });
     }
     init();
   }, []);
-  useEffect(() => {
-    const { web3 } = state;
-    const allAccounts = async () => {
-      var select = document.getElementById("selectNumber");
-      var options = await web3.eth.getAccounts();
-
-      for (var i = 0; i < options.length; i++) {
-        var opt = options[i];
-        var element = document.createElement("option");
-        element.textContent = opt;
-        element.value = opt;
-        select.appendChild(element);
-      }
-    };
-    web3 && allAccounts();
-  }, [state]);
-  const selectAccount = async () => {
-    let selectedAccountAddress = document.getElementById("selectNumber").value;
-
-    if (
-      selectedAccountAddress &&
-      selectedAccountAddress !== "Choose an account"
-    ) {
-      setAccount(selectedAccountAddress);
-    }
-  };
 
   return (
-    <Router>
-      <>
-        <div className="topnav">
-          <a>
-            <Link to="/">Home</Link>
-          </a>
-          <a>
-            <Link to="/candidate">Candidate</Link>
-          </a>
-          <a>
-            <Link to="/voter">Voter</Link>
-          </a>
-          <a>
-            <Link to="/voting">Voting</Link>
-          </a>
-          <a>
-            <Link to="/electionCommision">Election Commision</Link>
-          </a>
+    <>
+      <Navbar />
+      <WalletConnect state={state} />
 
-          <a>
-            <Winner state={state}></Winner>
-          </a>
-        </div>
+      <div className="App">
         <div className="maiNcontainer">
-          {/* <Winner state={state}></Winner> */}
-
-          {/* <Route exact path="/">
-        <Intro></Intro>
-      </Route> */}
-          {/* <p className="cat">Please select your account address</p> */}
-
-          <p className="ca">Connected Account:{account}</p>
-
-          <form className="label0" id="myForm">
-            <label htmlFor="">Choose an account</label>
-            <select
-              className="innerBox"
-              id="selectNumber"
-              onChange={selectAccount}
-            >
-              <option></option>
-            </select>
-          </form>
-
           <Routes>
-            {" "}
-            {/* Use Routes as the parent container */}
+            <Route path="/voter" element={<VoterRegister state={state} />} />
             <Route
               path="/candidate"
-              element={<Candidate state={state} account={account} />}
+              element={<CandidateRegister state={state} />}
             />
+            <Route path="/voting" element={<Voting state={state} />} />
             <Route
-              path="/voter"
-              element={<VoterRegister state={state} account={account} />}
+              p
+              ath="/electioncommision"
+              element={<ElectionCommision state={state} />}
             />
-            <Route
-              path="/voting"
-              element={<Voting state={state} account={account} />}
-            />
-            <Route
-              path="/electionCommision"
-              element={<ElectionCommision state={state} account={account} />}
-            />
+            <Route path="/result" element={<Winner state={state} />} />
           </Routes>
-          {/* <Winner state={state}></Winner> */}
         </div>
-      </>
-    </Router>
+      </div>
+    </>
   );
 }
 
 export default App;
-//list of all accounts to select from
-// selected account should become the sender
-//list of accounts should be common in all components

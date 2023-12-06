@@ -5,7 +5,7 @@ async function main() {
 
   const Vote = await ethers.deployContract("vote");
 
-  console.log("Token address:", await Vote.getAddress());
+  console.log("Vote address:", await Vote.target);
 }
 
 main()
